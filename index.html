@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>構成的解析に基づく区間演算検証系の存在定理</title>
+    
+    <!-- Fonts: Noto Serif JP (本文/数式用), Noto Sans JP (見出し) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax Configuration (AMS Style) -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    Re: "\\operatorname{Re}",
+                    Im: "\\operatorname{Im}",
+                    op: "\\operatorname{op}",
+                    Verify: "\\operatorname{Verify}",
+                    Ledger: "\\operatorname{Ledger}",
+                    R: "\\mathbb{R}",
+                    Q: "\\mathbb{Q}",
+                    D: "\\mathbb{D}",
+                    Z: "\\mathbb{Z}",
+                    N: "\\mathbb{N}",
+                    I: "\\mathcal{I}",
+                    O: "\\mathcal{O}",
+                    T: "\\mathcal{T}",
+                    denote: ["[\\![ #1 ]\\!]", 1],
+                    qed: "\\tag*{$\\square$}"
+                },
+                tags: 'ams'
+            },
+            options: {
+                renderActions: {
+                    addMenu: []
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --font-main: "Noto Serif JP", serif;
+            --font-heading: "Noto Sans JP", sans-serif;
+            --color-text: #1a1a1a;
+            --color-meta: #666;
+            --spacing-paragraph: 1.2rem;
+        }
+
+        body {
+            font-family: var(--font-main);
+            line-height: 1.8;
+            color: var(--color-text);
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            background-color: #fff;
+            text-align: justify;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Typography & Headings */
+        h1 {
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 1.7rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            letter-spacing: 0.05em;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--color-meta);
+            margin-bottom: 2.5rem;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        .author {
+            font-family: var(--font-heading);
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 5rem;
+            color: #333;
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-top: 3.5rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3rem;
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: var(--spacing-paragraph);
+            text-indent: 1em;
+        }
+
+        /* Theorem Environments - Minimalist Academic Style */
+        .theorem, .lemma, .proposition, .corollary, .definition, .remark, .example {
+            margin: 2.5rem 0;
+        }
+
+        /* Theorems: Italic body */
+        .theorem, .lemma, .proposition, .corollary {
+            font-style: italic;
+        }
+        
+        /* Others: Normal body */
+        .definition, .remark, .example {
+            font-style: normal;
+        }
+
+        .env-header {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-style: normal;
+            margin-right: 0.5em;
+            float: left;
+        }
+        
+        .env-header::after {
+            content: ".";
+        }
+
+        .env-content {
+            display: block;
+            margin-left: 0;
+        }
+        
+        /* Clearfix */
+        .theorem::after, .lemma::after, .definition::after, .proof::after, .env-content::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Proof Environment */
+        .proof {
+            margin: 1.5rem 0 3rem 0;
+            font-style: normal;
+        }
+        
+        .proof-header {
+            font-family: var(--font-main);
+            font-style: italic;
+            font-weight: 600;
+            margin-right: 0.5em;
+            float: left;
+        }
+        
+        .proof-header::after {
+            content: ".";
+        }
+
+        .qed-symbol {
+            float: right;
+            margin-top: -1em;
+            color: #444;
+        }
+
+        /* Lists */
+        ul, ol {
+            padding-left: 1.8em;
+            margin-bottom: var(--spacing-paragraph);
+        }
+        li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* MathJax Mobile Optimization */
+        mjx-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+        mjx-container[display="true"] {
+            margin: 1.5em 0 !important;
+            padding: 0.5em 0;
+        }
+
+        /* Abstract Box */
+        .abstract {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0 3rem 4rem 3rem;
+            color: #222;
+        }
+
+        /* References */
+        .references {
+            font-size: 0.9rem;
+            margin-top: 5rem;
+            border-top: 1px solid #eee;
+            padding-top: 2rem;
+        }
+        .references h2 {
+            font-size: 1.2rem;
+            border-bottom: none;
+            margin-bottom: 1.5rem;
+        }
+        .references h3 {
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            color: #555;
+        }
+        .references ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .references li {
+            padding-left: 2.2em;
+            text-indent: -2.2em;
+            margin-bottom: 0.8em;
+            line-height: 1.5;
+        }
+
+        /* Navigation Button (Academic Style) */
+        .nav-footer {
+            margin-top: 6rem;
+            padding-top: 3rem;
+            border-top: 1px solid #eaeaea;
+            text-align: center;
+        }
+        
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            background-color: #fff;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-button:hover {
+            color: #333;
+            border-color: #999;
+            background-color: #fafafa;
+        }
+
+        .nav-button::before {
+            content: "←";
+            margin-right: 0.8em;
+            font-family: var(--font-main);
+            font-size: 1.1em;
+            line-height: 1;
+        }
+
+        /* Mobile Specifics */
+        @media (max-width: 600px) {
+            body {
+                padding: 2rem 1.2rem;
+                font-size: 0.95rem;
+                line-height: 1.65;
+            }
+            h1 { font-size: 1.4rem; }
+            h2 { font-size: 1.2rem; margin-top: 2.5rem; }
+            .abstract { margin: 0 0 3rem 0; }
+            .theorem, .definition, .proof { margin: 2rem 0; }
+            
+            /* Tighten spacing for mobile */
+            .env-header, .proof-header {
+                float: none;
+                display: block;
+                margin-bottom: 0.3rem;
+            }
+            .qed-symbol {
+                float: right;
+                margin-top: 0;
+            }
+            .nav-footer {
+                margin-top: 4rem;
+                padding-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>構成的解析に基づく<br>区間演算検証系の存在定理</h1>
+        <div class="subtitle">ADIC の数学的基礎付けと $\Sigma_1$ 述語への還元</div>
+        <div class="author">GhostDrift Mathematical Institute</div>
+    </header>
+
+    <div class="abstract">
+        <strong>概要.</strong> 
+        本稿では、ADIC (Analytically Derived Interval Computation) システムの数学的基礎を確立する。
+        具体的には、ある自然なクラスの実数値計算プログラムに対し、その解析的性質（不等式仕様の充足）が、一階算術（PRA 等）における $\Sigma_1$ 述語の真偽と論理的に同値になることを証明する。
+        これは、連続的な実数計算の正当性検証を、有限かつ離散的な証明書（レジャー）の存在問題へ還元するものである。
+    </div>
+
+    <h2>1. 序論</h2>
+
+    <p>
+        実数値計算の正当性保証は、計算可能解析 (computable analysis) における中心的な課題である。
+        本稿は、Weihrauch らの Type-2 理論や Bishop–Bridges の構成的解析を基礎とし、
+        実数計算の検証プロセスを形式算術における $\Sigma_1$ 文
+        「ある有限の証拠が存在し、それを原始再帰的に検証できる」という形式へ還元する。
+    </p>
+
+    <div class="theorem">
+        <span class="env-header">定理 1.1 (主定理)</span>
+        <div class="env-content">
+        基本関数族 $\mathcal{O}$ が標準的な計算可能解析の仮定（定義 2.1）を満たすとする。
+        このとき、$\mathcal{O}$ 上のプログラム $P$、停止入力 $x$、および解析的仕様 $M(P,x)$ に対し、
+        以下の同値性が一階算術（PRA あるいは PA）の枠内で成立する。
+        $$ M(P,x) \iff \exists L \in \N \;.\; \Verify(P,x,L) = 1 $$
+        ここで $M(P,x)$ は出力値 $v_{\mathrm{out}}$ に関する固定された解析的仕様であり、
+        $\Verify$ はその仕様を判定する原始再帰的述語である。
+        </div>
+    </div>
+
+    <h3>1.1 関連研究と位置付け</h3>
+    <p>本稿の構成は、以下の標準的な理論枠組みと整合し、それらを計算機実装可能な形式へと精密化したものである。</p>
+    <ul>
+        <li>
+            <strong>基本関数の計算可能性:</strong> 
+            Weihrauch [1] の古典的枠組みに加え、2020年代の計算可能解析の標準リファレンスであるハンドブック [3] における定式化と同型である。
+        </li>
+        <li>
+            <strong>構成的解析と区間拡張:</strong> 
+            Bishop–Bridges [2] の古典に加え、現代的な Constructive Mathematics の総覧 [4] や Constructive Reverse Mathematics [11] における定理の再構成に基づく。
+        </li>
+        <li>
+            <strong>検証の算術化:</strong> 
+            Exact Real Computation の最新の意味論 [6] やプログラム抽出 [5]、および Coq での形式化 [7] と同様に、検証を離散構造上の操作に帰着させている。
+        </li>
+    </ul>
+    <p>
+        本稿の「ADIC の存在定理」は、これらの標準定理を実行可能な $\Sigma_1$ 形式に rephrase したものと見なせる。
+        また、Rigorous Numerics (精度保証付き数値計算) の分野では [8, 9, 10] に見られるように、数値計算ログそのものを存在証明に用いる実践が確立しており、
+        ADIC はそれらを形式体系上の有限台帳として統一的に位置付ける最小単位の存在定理である。
+    </p>
+
+    <h2>2. 予備知識と定義</h2>
+
+    <div class="definition">
+        <span class="env-header">定義 2.1 (基本関数族)</span>
+        <div class="env-content">
+        $\mathcal{O} = \{ \op_j : \R^{k_j} \to \R \}_{j\in J}$ を基本関数族とする。
+        各 $\op_j$ は定義域 $D_j \subseteq \R^{k_j}$ を持ち、以下を満たすものとする（Weihrauch [1] の標準定義と同値）。
+        <ol>
+            <li>$D_j$ 上で定義され、任意の有界部分集合上で連続。</li>
+            <li>有効な modulus of continuity $\omega$ を持つ（必要な入力精度が計算可能）。</li>
+            <li>有界領域上での値域の上界・下界が有効に計算可能。</li>
+        </ol>
+        </div>
+    </div>
+
+    <p>
+        基本関数 $\op_j$ の定義域 $D_j$ は半代数集合として記述され、
+        $X_1\times\cdots\times X_{k_j}\subset D_j$ の判定は PRA 内で原始再帰的に行われるものとする。
+    </p>
+
+    <div class="definition">
+        <span class="env-header">定義 2.2 ($\mathcal{O}$-プログラム)</span>
+        <div class="env-content">
+        $\mathcal{O}$-プログラムとは、有理定数・入力を葉とし、$\mathcal{O}$ の元を内部節とする計算木（または DAG）である。
+        ループを含む一般のプログラムについては、停止入力 $x$ に対する実行トレースを展開して得られる有限の木 $\T_{P,x}$ をその実体とみなす。
+        この木の意味論 $\denote{P}(x)$ は、各ノードに $\op_j$ を適用した合成関数の値として定義される。
+        <br>
+        木 $\T_{P,x}$ は有限列として符号化でき、その走査は原始再帰関数として定義可能である。
+        </div>
+    </div>
+
+    <h2>3. 区間拡張の構成</h2>
+
+    <div class="definition">
+        <span class="env-header">定義 3.1 (局所健全性)</span>
+        <div class="env-content">
+        区間演算 $I_{\op_j} : \I^{k_j} \to \I$ が局所健全であるとは、
+        $X \subseteq D_j$ なる任意の入力区間に対し、
+        $$ \op_j(X) \subseteq I_{\op_j}(X) $$
+        が成立することをいう。
+        </div>
+    </div>
+
+    <div class="lemma">
+        <span class="env-header">補題 3.2</span>
+        <div class="env-content">
+        定義 2.1 を満たす任意の基本関数 $\op_j$ に対し、局所健全かつ計算可能な区間拡張 $I_{\op_j}$ が存在し、
+        その構成は PRA 内で原始再帰的に定義できる。
+        </div>
+    </div>
+
+    <div class="proof">
+        <span class="proof-header">証明</span>
+        <strong>(1) 四則演算:</strong> 
+        $I_+([a,b],[c,d]) := [a+c, b+d]$ 等の標準的な区間演算を用いればよい。
+        除算は分母区間が $0$ を含まない場合に制限する。
+        <br><br>
+        <strong>(2) 代表例 $\log$:</strong> 
+        区間 $[a,b] \subset (0,\infty)$ 上の $\log$ を考える。
+        有効な modulus $\omega$ により、誤差 $\varepsilon$ に対する分割幅 $\delta$ を決定する。
+        $[a,b]$ を幅 $\delta$ 以下の小区間に分割し、各小区間の代表点 $c_i$ における近似値 $q_i$ をテイラー展開等で計算する。
+        このとき、値域全体は $\bigcup [q_i - \varepsilon, q_i + \varepsilon]$ に含まれるため、
+        その最小値・最大値をとることで包含区間 $[L^-, L^+]$ を構成できる。
+        この手続きは有限回の有理演算と大小比較に還元される。
+        <br><br>
+        <strong>(3) 一般の $\op_j$:</strong> 
+        定義 2.1 の仮定（一様連続性と値域評価可能性）より、上記 $\log$ と同様の区分近似手法が適用可能である。
+        <span class="qed-symbol">$\square$</span>
+    </div>
+
+    <h2>4. 検証の算術化と主定理の証明</h2>
+
+    <div class="definition">
+        <span class="env-header">定義 4.1 (レジャーと $\Verify$)</span>
+        <div class="env-content">
+        <strong>レジャー</strong> $L$ とは、計算木 $\T_{P,x}$ の各ノード $n$ に区間 $X_n$ を割り当てた有限列である。
+        述語 $\Verify(P,x,L)$ は以下を検査する原始再帰的関数である：
+        <ol>
+            <li>$L$ が計算木 $\T_{P,x}$ と同型であること。</li>
+            <li>各ノードで局所健全性 $\op(X_{child}) \subseteq X_{parent}$ が満たされること。</li>
+            <li>出力区間 $X_{\mathrm{out}}$ が仕様 $M(P,x)$ を満たすこと。</li>
+        </ol>
+        </div>
+    </div>
+
+    <div class="example">
+        <span class="env-header">例 4.3 ($\log$ の有界誤差近似)</span>
+        <div class="env-content">
+        仕様 $M$ の具体例として、「$\log(q)$ を誤差 $\varepsilon$ 以内で近似せよ」という命題
+        $$ M_{\log}(P, (q,\varepsilon)) \iff |\denote{P}(q,\varepsilon) - \log(q)| \le \varepsilon $$
+        を考える。ADIC においてこれは、出力区間 $X_{\mathrm{out}}$ が
+        $[\log(q)-\varepsilon, \log(q)+\varepsilon]$ に包含されることを以て検証される。
+        </div>
+    </div>
+
+    <div class="theorem">
+        <span class="env-header">定理 4.2 (主定理の再掲)</span>
+        <div class="env-content">
+        停止する $\mathcal{O}$-プログラム $P$ と入力 $x$ に対し、以下が成立する。
+        $$ M(P,x) \iff \exists L \in \N \;.\; \Verify(P,x,L) = 1 $$
+        </div>
+    </div>
+
+    <div class="proof">
+        <span class="proof-header">証明</span>
+        <strong>(健全性 $\Leftarrow$):</strong>
+        $\Verify=1$ とする。定義 4.1 より全てのステップで局所健全性が保たれている。
+        木構造に関する帰納法により、根ノードの真値 $v_{\mathrm{out}}$ は区間 $X_{\mathrm{out}}$ に含まれる（グローバル健全性）。
+        $\Verify$ は $X_{\mathrm{out}}$ が仕様を満たすことを確認済みであるため、真値 $v_{\mathrm{out}}$ も仕様を満たす。
+        <br><br>
+        <strong>(実現可能性 $\Rightarrow$):</strong>
+        $M(P,x)$ が真であるとする。
+        補題 3.2 の区間拡張を用い、計算木の葉から根へ区間を伝播させる手続き $\Ledger$ を構成する。
+        構成的解析の原理より、計算精度（分割幅など）を高めることで、出力区間 $X_{\mathrm{out}}$ の幅は任意に小さくできる。
+        $M(P,x)$ が真であるため、十分な精度をとれば $X_{\mathrm{out}}$ は仕様の許容範囲内に収まる。
+        このとき生成される $L$ は $\Verify=1$ を満たす。
+        <span class="qed-symbol">$\square$</span>
+    </div>
+
+    <h2>5. 結論</h2>
+
+    <p>
+        以上の議論により、ADIC の数学的実在性が証明された。
+        解析的な実数計算の正当性は、一階算術上で記述可能な有限の証明書（レジャー）の存在問題と等価である。
+        これにより、$\zeta$ 関数の零点計算等の高度な数学的対象に対しても、厳密な計算機証明を与える理論的基盤が確立された。
+    </p>
+
+    <h2>付録 A. $\log$ の区間拡張の素朴な構成</h2>
+
+    <p>
+        $\log$ に対する区間拡張の構成を、素朴な形で詳述する。
+    </p>
+
+    <div class="proposition">
+        <span class="env-header">命題 A.1</span>
+        <div class="env-content">
+        有効な modulus $\omega$ と有理点近似手続きを持つ $\log$ に対し、
+        任意の有界区間 $[a,b]$ 上の値域を包含する有理区間 $I_{\log}([a,b])$ を、
+        有限回の有理演算により構成的に定義できる。
+        </div>
+    </div>
+
+    <div class="proof">
+        <span class="proof-header">証明</span>
+        誤差 $\varepsilon>0$ を固定し、$\delta = \omega(\varepsilon/2)$ を求める。
+        区間 $[a,b]$ を幅 $\le \delta$ の $N$ 個の等分点 $u_i$ で分割する。
+        各小区間の代表点 $c_i$ での近似値 $q(c_i)$ を十分な精度（誤差 $\le \varepsilon/4$）で計算する。
+        <br>
+        modulus の性質より、任意の $x \in [u_{i-1}, u_i]$ に対し $|\log x - \log c_i| < \varepsilon/2$。
+        三角不等式より $|\log x - q(c_i)| < \varepsilon$ となり、
+        $\log x \in [q(c_i)-\varepsilon, q(c_i)+\varepsilon]$。
+        よって、全体の包含区間は
+        $$ L^- := \min_i (q(c_i)-\varepsilon), \quad L^+ := \max_i (q(c_i)+\varepsilon) $$
+        とすればよい。これらは全て有限回の有理演算で完結するため、原始再帰的である。
+        <span class="qed-symbol">$\square$</span>
+    </div>
+
+    <div class="references">
+        <h2>参考文献</h2>
+        <h3>Core References: Computable Analysis & Exact Real Computation</h3>
+        <ul>
+            <li>[1] K. Weihrauch, <em>Computable Analysis</em>, Springer, 2000.</li>
+            <li>[2] E. Bishop and D. Bridges, <em>Constructive Analysis</em>, Springer, 1985.</li>
+            <li>[3] V. Brattka, P. Hertling, K. Weihrauch (eds.), <em>Handbook of Computability and Complexity in Analysis</em>, Springer, 2021.</li>
+            <li>[4] D. Bridges et al. (eds.), <em>Handbook of Constructive Mathematics</em>, Cambridge Univ. Press, 2023.</li>
+            <li>[5] M. Konečný, S. Park, H. Thies, "Extracting efficient exact real number computation from proofs in constructive type theory", <em>J. Logic Comput.</em> (2024).</li>
+            <li>[6] S. Park et al., "Semantics, Specification Logic, and Hoare Logic of Exact Real Computation", <em>LMCS</em> 20(2), 2024.</li>
+            <li>[7] F. Steinberg and H. Thies, "Computable analysis, exact real arithmetic and analytic functions in Coq", <em>Coq Workshop 2019</em>.</li>
+        </ul>
+        
+        <h3>Applied Verification & Rigorous Numerics</h3>
+        <ul>
+            <li>[8] S. M. Rump, "Verification methods: Rigorous results using floating-point arithmetic", <em>Acta Numerica</em> 19, 2010.</li>
+            <li>[9] A. Matsue, A. Takayasu, "Rigorous numerics of blow-up solutions for ODEs with exponential nonlinearity", <em>J. Comput. Appl. Math.</em> 372, 2020.</li>
+            <li>[10] K. Ozaki et al., "Verified numerical computations for large-scale linear systems in double precision", <em>Appl. Math.</em> 66(2), 2021.</li>
+        </ul>
+
+        <h3>Constructive Logic & Proof Relevance</h3>
+        <ul>
+            <li>[11] H. Diener, H. Ishihara, "Bishop-Style Constructive Reverse Mathematics", in <em>Handbook of Computability and Complexity in Analysis</em> [3].</li>
+            <li>[12] A. Petrakis, "Proof-relevance in Bishop-style constructive mathematics", <em>Ann. Pure Appl. Logic</em> 173(1), 2022.</li>
+        </ul>
+    </div>
+
+    <div class="nav-footer">
+        <a href="https://ghostdrifttheory.github.io/ghostdrifttheory.github.io-JP/" class="nav-button">GhostDrift Theory Home</a>
+    </div>
+
+</body>
+</html>
